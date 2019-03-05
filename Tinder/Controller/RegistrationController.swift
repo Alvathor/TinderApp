@@ -7,12 +7,29 @@
 //
 
 import UIKit
+import Firebase
+import JGProgressHUD
+
+extension RegistrationController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        let image = info[.originalImage] as? UIImage
+        registrationViewModel.bindableImage.value = image
+        dismiss(animated: true)
+    }
+}
 
 class RegistrationController: UIViewController {
     
     //MARK: - V A R I A B L E S
+    
     let registrationViewModel = RegistrationViewModel()
     let gradientLayer = CAGradientLayer()
+    let registeringHUD = JGProgressHUD(style: .dark)
     
     let selectPhotoButton: UIButton = {
         let button = UIButton(type: .system)
@@ -21,6 +38,9 @@ class RegistrationController: UIViewController {
         button.backgroundColor  = .white
         button.setTitleColor(.black, for: .normal)
         button.layer.cornerRadius = 16
+        button.addTarget(self, action: #selector(handleSelectPhoto), for: .touchUpInside)
+        button.imageView?.contentMode = .scaleAspectFill
+        button.clipsToBounds = true
         return button
     }()
     
@@ -52,6 +72,7 @@ class RegistrationController: UIViewController {
         bt.setTitle("Register", for: .normal)
         bt.backgroundColor = .lightGray
         bt.isEnabled = false
+        bt.addTarget(self, action: #selector(login), for: .touchUpInside)
         return bt
     }()
     
@@ -69,13 +90,18 @@ class RegistrationController: UIViewController {
     }()
     
     //MARK: - L O A D I N G
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupGradientLayer()
         setupLayout()
-        setupLoginAction()
-        setupNotificationObservers()
         setupRegistrationViewModelObserver()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNotificationObservers()
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -89,24 +115,13 @@ class RegistrationController: UIViewController {
     }
     
     //MARK: - F U N C T I O N S
-    fileprivate func setupRegistrationViewModelObserver() {
-        registrationViewModel.isFormValidObserver = { [unowned self] isFormValid in
-            self.registerButton.isEnabled = isFormValid
-            if isFormValid {
-                self.registerButton.backgroundColor = #colorLiteral(red: 0.9897844195, green: 0.3658325076, blue: 0.3792536259, alpha: 1)
-            } else {
-                self.registerButton.backgroundColor = .lightGray
-            }
-        }
-    }
     
-    @objc fileprivate func handleTextChange(textField: UITextField) {
-        switch textField {
-        case fullNameTextField: registrationViewModel.fullName  = textField.text
-        case emailTextField:    registrationViewModel.email     = textField.text
-        case passwordTextField: registrationViewModel.password  = textField.text
-        default: break
-        }
+    fileprivate func setupLayout() {
+        view.addSubview(overallStackView)
+        overallStackView.axis = .vertical
+        overallStackView.spacing = 8
+        overallStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
+        overallStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
     }
     
     fileprivate func setupGradientLayer() {
@@ -118,9 +133,52 @@ class RegistrationController: UIViewController {
         gradientLayer.frame = view.bounds
     }
     
+    fileprivate func setupRegistrationViewModelObserver() {
+        registrationViewModel.isBindableFormValid.bind { [unowned self] isFormValid in
+            guard let isFormValid = isFormValid else { return }
+            self.registerButton.isEnabled = isFormValid
+            if isFormValid {
+                self.registerButton.backgroundColor = #colorLiteral(red: 0.9897844195, green: 0.3658325076, blue: 0.3792536259, alpha: 1)
+            } else {
+                self.registerButton.backgroundColor = .lightGray
+            }
+        }
+        
+        registrationViewModel.bindableImage.bind { [unowned self] image in
+            self.selectPhotoButton.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
+        }
+        
+        registrationViewModel.bindableRegistering.bind { [unowned self] isRegistering in
+            guard let isRegistering = isRegistering else { return }
+            if isRegistering {
+                self.registeringHUD.textLabel.text = "Registering"
+                self.registeringHUD.show(in: self.view)
+            } else {
+                self.registeringHUD.dismiss()
+            }
+        }
+    }
+    
     fileprivate func setupNotificationObservers() {
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyBoardShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyBoardHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    // Objc Targets
+    
+    @objc fileprivate func handleSelectPhoto() {
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        present(imagePickerController, animated: true)
+    }
+    
+    @objc fileprivate func handleTextChange(textField: UITextField) {
+        switch textField {
+        case fullNameTextField: registrationViewModel.fullName  = textField.text
+        case emailTextField:    registrationViewModel.email     = textField.text
+        case passwordTextField: registrationViewModel.password  = textField.text
+        default: break
+        }
     }
     
     @objc fileprivate func handleKeyBoardHide(notification: Notification) {
@@ -147,6 +205,25 @@ class RegistrationController: UIViewController {
         }
     }
     
+    @objc fileprivate func login() {
+        view.endEditing(true)
+        registrationViewModel.performRegistration { [unowned self] (err) in
+            if let err = err {
+                self.showHUDWithError(err)
+            }
+        }
+    }
+    
+    fileprivate func showHUDWithError(_ error: Error) {
+        self.registeringHUD.dismiss()
+        let hud = JGProgressHUD(style: .dark)
+        hud.textLabel.text = "Faile Registration"
+        hud.detailTextLabel.text = error.localizedDescription
+        hud.show(in: self.view)
+        hud.dismiss(afterDelay: 4)
+    }
+    
+    // Handle Orientation
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         if traitCollection.verticalSizeClass == .compact {
             overallStackView.axis = .horizontal
@@ -155,23 +232,6 @@ class RegistrationController: UIViewController {
             overallStackView.axis = .vertical
             selectPhotoButton.heightAnchor.constraint(equalToConstant: view.frame.height / 3).isActive = true
         }
-    }
-    
-    fileprivate func setupLayout() {
-        view.addSubview(overallStackView)        
-        overallStackView.axis = .vertical
-        overallStackView.spacing = 8
-        overallStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
-        overallStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-    }
-    
-    fileprivate func setupLoginAction() {
-        registerButton.addTarget(self, action: #selector(login), for: .touchUpInside)
-    }
-    
-    @objc fileprivate func login() {
-        let homecontroller = HomeController()
-        present(homecontroller, animated: true)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

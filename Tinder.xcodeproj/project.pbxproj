@@ -24,6 +24,7 @@
 		C08F9858222B234C0070419E /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08F9857222B234C0070419E /* CustomButton.swift */; };
 		C08F985F222C3A350070419E /* RegistrationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08F985E222C3A350070419E /* RegistrationViewModel.swift */; };
 		C08F9861222C458A0070419E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C08F9860222C458A0070419E /* GoogleService-Info.plist */; };
+		C0A5B05E222D8A8100BDED6E /* Bindable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A5B05D222D8A8100BDED6E /* Bindable.swift */; };
 		CE297CEA98DF5CE935FD825A /* Pods_Tinder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93EAAC3FDF892CAF28616256 /* Pods_Tinder.framework */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +51,7 @@
 		C08F9857222B234C0070419E /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
 		C08F985E222C3A350070419E /* RegistrationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewModel.swift; sourceTree = "<group>"; };
 		C08F9860222C458A0070419E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C0A5B05D222D8A8100BDED6E /* Bindable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bindable.swift; sourceTree = "<group>"; };
 		EE52D335015808FE4595528D /* Pods-Tinder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tinder.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tinder/Pods-Tinder.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -153,6 +155,7 @@
 			children = (
 				C07AA9CC220638D700D70D3D /* HomeController.swift */,
 				C08F9853222B17510070419E /* RegistrationController.swift */,
+				C0A5B05D222D8A8100BDED6E /* Bindable.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -324,6 +327,7 @@
 				C07AA9DE220639DE00D70D3D /* Extensions+UIView.swift in Sources */,
 				C08F98502225E0320070419E /* CardViewModel.swift in Sources */,
 				C07AA9E62206757400D70D3D /* CardView.swift in Sources */,
+				C0A5B05E222D8A8100BDED6E /* Bindable.swift in Sources */,
 				C08F9858222B234C0070419E /* CustomButton.swift in Sources */,
 				C08F985F222C3A350070419E /* RegistrationViewModel.swift in Sources */,
 				C07AA9E422066C0E00D70D3D /* TopNavigationStackView.swift in Sources */,
@@ -478,7 +482,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4C3TTPY562;
 				INFOPLIST_FILE = Tinder/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.alvarenga.Tinder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
@@ -494,7 +501,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4C3TTPY562;
 				INFOPLIST_FILE = Tinder/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.alvarenga.Tinder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
