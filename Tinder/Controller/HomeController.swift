@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class HomeController: UIViewController {
     
@@ -15,25 +16,14 @@ class HomeController: UIViewController {
     let cardDeckView = UIView()
     let buttonsStackView = HomeButtonControllStackView()
     
-    let cardViews: [CardViewModel] = {
-       let producers = [
-            User(name: "Kelly", age: 23, profession: "Music DJ", imageNames: ["kelly1", "kelly2", "kelly3"]),
-            User(name: "Jane", age: 18, profession: "Teacher", imageNames: ["jane1", "jane2", "jane3"]),
-            Advertiser(title: "Slide Out Menu", brandName: "Lets Build That App", posterPhotoName: "bg"),
-            User(name: "Jane", age: 18, profession: "Teacher", imageNames: ["jane2"])
-        ] as [ProducesCardViewModel]
-        
-        let viewModels = producers.compactMap({ return $0.toCardViewModel()})
-        return viewModels
-    }()
+    var cardViews = [CardViewModel]()
     
     //MARK: - L O A D I N G
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupLayout()
-        setupCardView()
-        
+        setupLayout()        
         topStackView.settingsButton.addTarget(self, action: #selector(handleSettings), for: .touchUpInside)
+        fetchUsersFromFirestore()
     }
     
     //MARK: - F U N C T I O N S
@@ -42,12 +32,28 @@ class HomeController: UIViewController {
         present(registrationController, animated: true)
     }
     
-    fileprivate func setupCardView() {
+    fileprivate func fetchUsersFromFirestore() {
+        Firestore.firestore().collection("users").getDocuments { (snapShot, err) in
+            if let err = err {
+                print("failed to fetch users:", err)
+                return
+            }
+            
+            snapShot?.documents.forEach({ (documentSnapshot) in
+                let userDictionaty = documentSnapshot.data()
+                let user = User(dictionary: userDictionaty)
+                self.cardViews.append(user.toCardViewModel())
+            })
+            self.setupFirestoreUsersCards()            
+        }
+    }
+    
+    fileprivate func setupFirestoreUsersCards() {
         cardViews.forEach { (cardViewModel) in
             let cardView = CardView(frame: .zero)            
             cardView.cardViewModel = cardViewModel
             cardDeckView.addSubview(cardView)
-            cardView.fillSuperview()
+            cardView.fillSuperview()            
         }
     }
     

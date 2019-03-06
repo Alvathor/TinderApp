@@ -16,8 +16,7 @@ class CardViewModel {
     let imageNames: [String]
     let attributedString: NSAttributedString
     let textAligment: NSTextAlignment
-    var imageIndexObserver: ((UIImage?, Int) -> ())?
-    var currentView = CardView()
+    var imageIndexObserver: ((UIImage?, Int) -> ())?    
     
     fileprivate var imageIndex = 0 {
         didSet {

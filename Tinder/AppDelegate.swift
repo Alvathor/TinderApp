@@ -11,17 +11,27 @@ import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        FirebaseApp.configure()
-        
+        setupFirebase()
+        setupInitialWindow()
+        return true
+    }
+    
+    fileprivate func setupInitialWindow() {
         window = UIWindow()
         window?.makeKeyAndVisible()
-        window?.rootViewController = RegistrationController()
-        
-        return true
+        window?.rootViewController = HomeController()
+    }
+    
+    fileprivate func setupFirebase() {
+        FirebaseApp.configure()
+        let db = Firestore.firestore()
+        let settings = db.settings
+        settings.areTimestampsInSnapshotsEnabled = true
+        db.settings = settings
     }
 
 }

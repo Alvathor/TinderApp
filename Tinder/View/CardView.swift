@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class CardView: UIView {
     
@@ -15,16 +16,24 @@ class CardView: UIView {
     fileprivate let threshold: CGFloat = 100
     fileprivate let barStackView = UIStackView()
     fileprivate let barDeselectedColor = UIColor.darkGray.withAlphaComponent(0.2)
+    fileprivate let gradientLayer = CAGradientLayer()
+    
     var imageIndex = 0
     
     var cardViewModel: CardViewModel! {
         didSet {
             let imageName = cardViewModel.imageNames.first ?? ""
-            imageView.image = UIImage(named: imageName)
+            if let url = URL(string: imageName) {
+                imageView.sd_setImage(with: url) { (_, _, _, _) in
+//                    UIView.animate(withDuration: 0.3, animations: {
+//                        self.alpha = 1
+//                    })                    
+                }
+            }
             informationLabel.attributedText = cardViewModel.attributedString
             informationLabel.textAlignment = cardViewModel.textAligment
             
-            (0..<cardViewModel.imageNames.count).forEach { (_) in
+            (0..<cardViewModel.imageNames.count).forEach { (c) in
                 let barView = UIView()
                 barView.backgroundColor = barDeselectedColor
                 barView.layer.cornerRadius = 2
@@ -37,7 +46,7 @@ class CardView: UIView {
     }
     
     override func layoutSubviews() {
-        setupGradientLayer()
+        gradientLayer.frame = frame
     }
     
     override init(frame: CGRect) {
@@ -56,12 +65,22 @@ class CardView: UIView {
         }
     }
     
+    fileprivate func setupGradientLayer() {
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.black.withAlphaComponent(0.6).cgColor]
+        gradientLayer.locations = [0.2, 1]
+        layer.addSublayer(gradientLayer)
+    }
+    
     fileprivate func setupLayout() {
+//        self.alpha = 0
         clipsToBounds = true
         layer.cornerRadius = 15
-        addSubview(imageView)
         imageView.contentMode = .scaleAspectFill
+        addSubview(imageView)
         imageView.fillSuperview()
+        setupBarsStackView()
+        setupGradientLayer()
+        
         addSubview(informationLabel)
         informationLabel.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 16, right: 16))
         informationLabel.textColor = .white
@@ -71,7 +90,6 @@ class CardView: UIView {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(sender:)))
         addGestureRecognizer(panGesture)
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
-        setupBarsStackView()
     }
     
     @objc fileprivate func handleTap(gesture: UITapGestureRecognizer) {        
@@ -91,14 +109,6 @@ class CardView: UIView {
         barStackView.distribution = .fillEqually
     }
     
-    fileprivate func setupGradientLayer() {
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.black.withAlphaComponent(0.6).cgColor]
-        gradientLayer.locations = [0.2, 1]
-        gradientLayer.frame = self.frame
-        
-        layer.insertSublayer(gradientLayer, at: 1)
-    }
     
     @objc fileprivate func handlePan(sender: UIPanGestureRecognizer) {
         switch sender.state {

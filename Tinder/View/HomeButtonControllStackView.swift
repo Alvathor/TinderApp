@@ -18,8 +18,7 @@ class HomeButtonControllStackView: UIStackView {
         
         let bottomSubviews = [#imageLiteral(resourceName: "refresh_circle"), #imageLiteral(resourceName: "dismiss_circle"), #imageLiteral(resourceName: "super_like_circle"), #imageLiteral(resourceName: "like_circle"), #imageLiteral(resourceName: "boost_circle")].map { (img) -> UIView in
             let bt = UIButton(type: .system)
-            bt.setImage(img.withRenderingMode(.alwaysOriginal), for: .normal)
-            bt.contentMode = .scaleAspectFit
+            bt.setImage(img.withRenderingMode(.alwaysOriginal), for: .normal)            
             return bt
         }
         

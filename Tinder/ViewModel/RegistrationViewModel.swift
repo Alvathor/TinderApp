@@ -32,15 +32,11 @@ class RegistrationViewModel {
                 completion(err)
                 return
             }
-            self.storatePicture(completion: { err in
-                if let err = err {
-                    completion(err)
-                }
-            })
+            self.storateImageToFirebase(completion: completion)
         }
     }
     
-    fileprivate func storatePicture(completion: @escaping (Error?) -> ()) {
+    fileprivate func storateImageToFirebase(completion: @escaping (Error?) -> ()) {
         let filename = UUID().uuidString
         let ref = Storage.storage().reference(withPath: "/images/\(filename)")
         let metaData = StorageMetadata()
@@ -58,8 +54,22 @@ class RegistrationViewModel {
                     return
                 }
                 self.bindableRegistering.value = false
-                print("download url of our image is :", url?.absoluteString ?? "")
+                let imageUrl = url?.absoluteString ?? ""
+                self.saveInfoToFirestore(imageUrl: imageUrl, completion: completion)
             })
         })
+    }
+    
+    fileprivate func saveInfoToFirestore(imageUrl: String, completion: @escaping (Error?) -> ()) {
+        let uid = Auth.auth().currentUser?.uid ?? ""
+        let docData = ["fullName": fullName ?? "", "uid": uid, "imageUrl1": imageUrl]
+        
+        Firestore.firestore().collection("users").document(uid).setData(docData) { (err) in
+            if let err = err {
+                completion(err)
+                return
+            }
+            completion(nil)
+        }
     }
 }
