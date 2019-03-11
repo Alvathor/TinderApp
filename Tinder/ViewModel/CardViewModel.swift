@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 protocol ProducesCardViewModel {
     func toCardViewModel() -> CardViewModel
@@ -20,9 +21,11 @@ class CardViewModel {
     
     fileprivate var imageIndex = 0 {
         didSet {
-            let imageName = imageNames[imageIndex]
-            let image = UIImage(named: imageName)
-            imageIndexObserver?(image, imageIndex)
+            let imageName = URL(string: imageNames[imageIndex])
+            
+            let image = UIImageView()
+            image.sd_setImage(with: imageName)
+            imageIndexObserver?(image.image, imageIndex)
         }
     }
     

@@ -25,9 +25,9 @@ class CardView: UIView {
             let imageName = cardViewModel.imageNames.first ?? ""
             if let url = URL(string: imageName) {
                 imageView.sd_setImage(with: url) { (_, _, _, _) in
-//                    UIView.animate(withDuration: 0.3, animations: {
-//                        self.alpha = 1
-//                    })                    
+                    UIView.animate(withDuration: 0.3, animations: {
+                        self.alpha = 1
+                    })
                 }
             }
             informationLabel.attributedText = cardViewModel.attributedString
@@ -72,7 +72,7 @@ class CardView: UIView {
     }
     
     fileprivate func setupLayout() {
-//        self.alpha = 0
+        self.alpha = 0
         clipsToBounds = true
         layer.cornerRadius = 15
         imageView.contentMode = .scaleAspectFill
