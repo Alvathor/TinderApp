@@ -30,8 +30,9 @@ class HomeController: UIViewController {
     
     //MARK: - F U N C T I O N S
     @objc fileprivate func handleSettings() {
-        let registrationController = RegistrationController()
-        present(registrationController, animated: true)
+        let settingsController = SettingsController()
+        let navController = UINavigationController(rootViewController: settingsController)
+        present(navController, animated: true)
     }
     
     var lastFetchedUser: User?
