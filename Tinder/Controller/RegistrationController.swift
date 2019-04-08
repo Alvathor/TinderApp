@@ -10,19 +10,6 @@ import UIKit
 import Firebase
 import JGProgressHUD
 
-extension RegistrationController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        dismiss(animated: true)
-    }
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        let image = info[.originalImage] as? UIImage
-        registrationViewModel.bindableImage.value = image
-        dismiss(animated: true)
-    }
-}
-
 class RegistrationController: UIViewController {
     
     //MARK: - V A R I A B L E S
@@ -89,6 +76,15 @@ class RegistrationController: UIViewController {
         return sv
     }()
     
+    let loginButton: UIButton = {
+        let c = UIButton()
+        c.setTitle("Go to login", for: .normal)
+        c.setTitleColor(.white, for: .normal)
+        c.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .heavy)
+        c.addTarget(self, action: #selector(handleGoToLogin), for: .touchUpInside)
+        return c
+    }()
+    
     //MARK: - L O A D I N G
     
     override func viewDidLoad() {
@@ -114,14 +110,18 @@ class RegistrationController: UIViewController {
         gradientLayer.frame = view.bounds
     }
     
-    //MARK: - F U N C T I O N S
+    //MARK: - P R I V A T E  F U N C T I O N S
     
     fileprivate func setupLayout() {
+        navigationController?.isNavigationBarHidden = true
         view.addSubview(overallStackView)
         overallStackView.axis = .vertical
         overallStackView.spacing = 8
         overallStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
         overallStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        
+        view.addSubview(loginButton)
+        loginButton.anchor(top: nil, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
     }
     
     fileprivate func setupGradientLayer() {
@@ -164,7 +164,12 @@ class RegistrationController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyBoardHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    // Objc Targets
+    //MARK: - A C T I O N S  F U N C T I O N S
+    
+    @objc fileprivate func handleGoToLogin() {
+        let loginController = LoginController()
+        navigationController?.pushViewController(loginController, animated: true)
+    }
     
     @objc fileprivate func handleSelectPhoto() {
         let imagePickerController = UIImagePickerController()
@@ -223,7 +228,7 @@ class RegistrationController: UIViewController {
         hud.dismiss(afterDelay: 4)
     }
     
-    // Handle Orientation
+    //MARK: - O V E R R R I D E  F U N C T I O N S
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         if traitCollection.verticalSizeClass == .compact {
             overallStackView.axis = .horizontal
@@ -236,5 +241,19 @@ class RegistrationController: UIViewController {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
+    }
+}
+
+//MARK: - E X T E N S I O N
+extension RegistrationController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        let image = info[.originalImage] as? UIImage
+        registrationViewModel.bindableImage.value = image
+        dismiss(animated: true)
     }
 }

@@ -9,6 +9,7 @@
 import UIKit
 import SDWebImage
 
+
 class CardView: UIView {
     
     fileprivate let imageView = UIImageView()
@@ -19,6 +20,8 @@ class CardView: UIView {
     fileprivate let gradientLayer = CAGradientLayer()
     
     var imageIndex = 0
+
+    var bindableCardView = Bindable<CardViewModel>()
     
     var cardViewModel: CardViewModel! {
         didSet {
@@ -71,6 +74,18 @@ class CardView: UIView {
         layer.addSublayer(gradientLayer)
     }
     
+    fileprivate let moreInfoButton: UIButton = {
+        let c = UIButton(type: .system)
+        c.setImage(#imageLiteral(resourceName: "info-1").withRenderingMode(.alwaysTemplate), for: .normal)
+        c.tintColor = .white
+        c.addTarget(self, action: #selector(handleMoreInfo), for: .touchUpInside)
+        return c
+    }()
+  
+    @objc fileprivate func handleMoreInfo() {        
+        bindableCardView.value = cardViewModel
+    }
+    
     fileprivate func setupLayout() {
         self.alpha = 0
         clipsToBounds = true
@@ -90,6 +105,9 @@ class CardView: UIView {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(sender:)))
         addGestureRecognizer(panGesture)
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
+        
+        addSubview(moreInfoButton)
+        moreInfoButton.anchor(top: nil, leading: nil, bottom: bottomAnchor, trailing: trailingAnchor, padding: UIEdgeInsets.init(top: 0, left: 0, bottom: 16, right: 16), size: .init(width: 44, height: 44))
     }
     
     @objc fileprivate func handleTap(gesture: UITapGestureRecognizer) {        

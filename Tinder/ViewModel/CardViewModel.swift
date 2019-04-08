@@ -22,14 +22,11 @@ class CardViewModel {
     fileprivate var imageIndex = 0 {
         didSet {
             let imageName = URL(string: imageNames[imageIndex])
-            
             let image = UIImageView()
             image.sd_setImage(with: imageName)
             imageIndexObserver?(image.image, imageIndex)
         }
-    }
-    
-    
+    }    
         
     init(_imageNames: [String], _attributedString: NSAttributedString, _textAligment: NSTextAlignment) {
         self.imageNames = _imageNames
