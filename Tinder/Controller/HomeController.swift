@@ -87,7 +87,10 @@ class HomeController: UIViewController {
     }
     
     @objc fileprivate func fetchUsersFromFirestore() {
-        guard let minAge = user?.minSeekingAge, let maxAge = user?.maxSeekingAge else { return }
+        
+        let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge
+        let maxAge = user?.maxSeekingAge ?? SettingsController.defaultMaxSeekingAge
+                
         let hud = JGProgressHUD(style: .dark)
         hud.textLabel.text = "Feching users"
         hud.show(in: view)

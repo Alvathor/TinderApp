@@ -18,12 +18,12 @@ class UserDetailsController: UIViewController {
         return c
     }()
     
-//    let imageView: UIImageView = {
-//        let c = UIImageView(image: #imageLiteral(resourceName: "jane2"))
-//        c.contentMode = .scaleAspectFill
-//        c.clipsToBounds = true
-//        return c
-//    }()
+    let imageView: UIImageView = {
+        let c = UIImageView(image: #imageLiteral(resourceName: "jane2"))
+        c.contentMode = .scaleAspectFill
+        c.clipsToBounds = true
+        return c
+    }()
     
     let swipingPhotosController = SwipingPhotosController(transitionStyle: .scroll, navigationOrientation: .horizontal)
     lazy var swipingView = swipingPhotosController.view!

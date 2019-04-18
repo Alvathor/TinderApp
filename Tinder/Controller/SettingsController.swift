@@ -21,6 +21,8 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     lazy var image2Button = createButton(selector: #selector(handleSelectPhoto))
     lazy var image3Button = createButton(selector: #selector(handleSelectPhoto))
     var user: User?
+    static let defaultMinSeekingAge = 18
+    static let defaultMaxSeekingAge = 50
     
     var bindableSave = Bindable<Void>()
     
@@ -235,10 +237,14 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
             let ageRangeCell = AgeRangeCell(style: .default, reuseIdentifier: nil)
             ageRangeCell.minSlider.addTarget(self, action: #selector(handleMinAgeChange), for: .valueChanged)
             ageRangeCell.maxSlider.addTarget(self, action: #selector(handleMaxAgeChange), for: .valueChanged)
-            ageRangeCell.minLabel.text = "Min \(user?.minSeekingAge ?? -1)"
-            ageRangeCell.minSlider.value = Float(user?.minSeekingAge ?? -1)
-            ageRangeCell.maxLabel.text = "Max \(user?.maxSeekingAge ?? -1)"
-            ageRangeCell.maxSlider.value = Float(user?.maxSeekingAge ?? -1)
+            
+            let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge
+            let maxAge = user?.maxSeekingAge ?? SettingsController.defaultMaxSeekingAge
+            
+            ageRangeCell.minLabel.text = "Min \(minAge)"
+            ageRangeCell.maxLabel.text = "Max \(maxAge)"
+            ageRangeCell.minSlider.value = Float(minAge)
+            ageRangeCell.maxSlider.value = Float(maxAge)
             return ageRangeCell
         }
         switch indexPath.section {
