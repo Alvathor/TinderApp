@@ -6,7 +6,6 @@
 //  Copyright © 2019 Juliano Alvarenga. All rights reserved.
 //
 
-import UIKit
 import SDWebImage
 
 protocol ProducesCardViewModel {
@@ -14,21 +13,21 @@ protocol ProducesCardViewModel {
 }
 
 class CardViewModel {
+    let uid: String
     let imageNames: [String]
     let attributedString: NSAttributedString
     let textAligment: NSTextAlignment
-    var imageIndexObserver: ((UIImage?, Int) -> ())?    
+    var imageIndexObserver: ((String?, Int) -> ())?
     
     fileprivate var imageIndex = 0 {
         didSet {
-            let imageName = URL(string: imageNames[imageIndex])
-            let image = UIImageView()
-            image.sd_setImage(with: imageName)
-            imageIndexObserver?(image.image, imageIndex)
+            let imageUrl = imageNames[imageIndex]
+            imageIndexObserver?(imageUrl, imageIndex)
         }
     }    
         
-    init(_imageNames: [String], _attributedString: NSAttributedString, _textAligment: NSTextAlignment) {
+    init(uid: String, _imageNames: [String], _attributedString: NSAttributedString, _textAligment: NSTextAlignment) {
+        self.uid = uid
         self.imageNames = _imageNames
         self.attributedString = _attributedString
         self.textAligment = _textAligment

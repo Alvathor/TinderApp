@@ -17,6 +17,6 @@ struct Advertiser: ProducesCardViewModel {
         let attributedString = NSMutableAttributedString(string: title, attributes: [.font: UIFont.systemFont(ofSize: 34, weight: .heavy)])
         attributedString.append(NSAttributedString(string: "\n" + brandName, attributes: [.font: UIFont.systemFont(ofSize: 24, weight: .bold)]))
 
-        return CardViewModel(_imageNames: [posterPhotoName], _attributedString: attributedString, _textAligment: .center)
+        return CardViewModel(uid: "", _imageNames: [posterPhotoName], _attributedString: attributedString, _textAligment: .center)
     }
 }

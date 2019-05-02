@@ -25,7 +25,7 @@ class UserDetailsController: UIViewController {
         return c
     }()
     
-    let swipingPhotosController = SwipingPhotosController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+    let swipingPhotosController = SwipingPhotosController()
     lazy var swipingView = swipingPhotosController.view!
     
     let infoLabel: UILabel = {

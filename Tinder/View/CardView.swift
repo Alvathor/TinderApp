@@ -9,10 +9,9 @@
 import UIKit
 import SDWebImage
 
-
 class CardView: UIView {
     
-    fileprivate let imageView = UIImageView()
+    fileprivate let swippingPhotosController = SwipingPhotosController(isCardViewMode: true)
     fileprivate let informationLabel = UILabel()
     fileprivate let threshold: CGFloat = 100
     fileprivate let barStackView = UIStackView()
@@ -20,19 +19,14 @@ class CardView: UIView {
     fileprivate let gradientLayer = CAGradientLayer()
     
     var imageIndex = 0
-
+    var nexCardView: CardView?
     var bindableCardView = Bindable<CardViewModel>()
+    var bindableDidRemove = Bindable<CardView>()
+    var bindableCardSwipe = Bindable<Int>()
     
     var cardViewModel: CardViewModel! {
         didSet {
-            let imageName = cardViewModel.imageNames.first ?? ""
-            if let url = URL(string: imageName) {
-                imageView.sd_setImage(with: url) { (_, _, _, _) in
-                    UIView.animate(withDuration: 0.3, animations: {
-                        self.alpha = 1
-                    })
-                }
-            }
+            swippingPhotosController.cardViewModel = cardViewModel
             informationLabel.attributedText = cardViewModel.attributedString
             informationLabel.textAlignment = cardViewModel.textAligment
             
@@ -59,8 +53,7 @@ class CardView: UIView {
     
     
     fileprivate func setupImageIndexObserver() {
-        cardViewModel.imageIndexObserver = { [weak self] image, index in
-            self?.imageView.image = image
+        cardViewModel.imageIndexObserver = { [weak self] imageUrl, index in
             self?.barStackView.arrangedSubviews.forEach({ (v) in
                 v.backgroundColor = self?.barDeselectedColor
             })
@@ -87,13 +80,12 @@ class CardView: UIView {
     }
     
     fileprivate func setupLayout() {
-        self.alpha = 0
         clipsToBounds = true
         layer.cornerRadius = 15
-        imageView.contentMode = .scaleAspectFill
-        addSubview(imageView)
-        imageView.fillSuperview()
-        setupBarsStackView()
+        
+        let swipingPhotosView = swippingPhotosController.view!
+        addSubview(swipingPhotosView)
+        swipingPhotosView.fillSuperview()
         setupGradientLayer()
         
         addSubview(informationLabel)
@@ -155,19 +147,19 @@ class CardView: UIView {
         let translationDirection: CGFloat = sender.translation(in: nil).x > 0 ? 1 : -1
         let shouldDismissCard = abs(sender.translation(in: nil).x) > threshold
         
-        UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.1, options: .curveEaseOut, animations: {
-            if shouldDismissCard {
-                self.frame = CGRect(x: 600 * translationDirection, y: 0, width: self.frame.width, height: self.frame.height)
-                
+        if shouldDismissCard {
+            isUserInteractionEnabled = false
+            if translationDirection == 1 {
+                bindableCardSwipe.value = 1
             } else {
+                bindableCardSwipe.value = 0
+            }
+        } else {
+            UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.1, options: .curveEaseOut, animations: {
                 self.transform = .identity
-            }
-        }) { (_) in
-            self.transform = .identity
-            if shouldDismissCard {
-                self.removeFromSuperview()
-            }
+            })
         }
+       
     }
     
     required init?(coder aDecoder: NSCoder) {
