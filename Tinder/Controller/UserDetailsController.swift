@@ -92,17 +92,12 @@ class UserDetailsController: UIViewController {
     
     fileprivate func setupLayout() {
         view.backgroundColor = .white
-        
         view.addSubview(scrollView)
         scrollView.fillSuperview()
-        
-        
         scrollView.addSubview(swipingView)
-        
         scrollView.addSubview(infoLabel)
         infoLabel.anchor(top: swipingView.bottomAnchor, leading: scrollView.leadingAnchor, bottom: nil, trailing: scrollView.trailingAnchor, padding: .init(top: 16, left: 16, bottom: 16, right: 16))
-        scrollView.addSubview(dismissButton)
-        
+        scrollView.addSubview(dismissButton)        
         dismissButton.anchor(top: swipingView.bottomAnchor, leading: nil, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: -25, left: 0, bottom: 0, right: 25), size: .init(width: 50, height: 50))
     }
     
